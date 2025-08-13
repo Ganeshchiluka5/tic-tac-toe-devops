@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Ganeshchiluka5/tic-tac-toe-devops.git'
+                 git branch: 'main', url: 'https://github.com/Ganeshchiluka5/tic-tac-toe-devops.git'
             }
         }
         stage('Build Docker Image') {
