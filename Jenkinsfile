@@ -1,20 +1,48 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = 'tic-tac-toe-app'
+        CONTAINER_NAME = 'tic-tac-toe'
+    }
+
     stages {
-        stage('Checkout') {
+
+        stage('Checkout SCM') {
             steps {
-                git 'https://github.com/Ganeshchiluka5/tic-tac-toe-devops.git'
+                // GitHub repo URL + branch correct ga mention cheyyandi
+                git branch: 'main', url: 'https://github.com/Ganeshchiluka5/tic-tac-toe-devops.git'
             }
         }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t tic-tac-toe .'
+                script {
+                    // Docker image build
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                }
             }
         }
+
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 80:80 tic-tac-toe'
+                script {
+                    // Existing container unna delete cheyandi
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+
+                    // New container run
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 8082:8080 ${IMAGE_NAME}:latest"
+                }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully. App running on port 8082"
+        }
+        failure {
+            echo "Pipeline failed. Check logs for errors."
         }
     }
 }
